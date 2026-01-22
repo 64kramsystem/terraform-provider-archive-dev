@@ -3,7 +3,7 @@ GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=archive
 BINARY_NAME=terraform-provider-archive
-VERSION?=dev
+VERSION?=6.7.0
 
 GOOS?=$(shell go env GOOS)
 GOARCH?=$(shell go env GOARCH)

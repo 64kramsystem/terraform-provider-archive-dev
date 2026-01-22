@@ -35,6 +35,29 @@ $ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-archive
 $ make build
 ```
 
+Building for Multiple Platforms
+--------------------------------
+
+To build for specific platforms with ARM64 support:
+
+```sh
+# Build for all supported platforms (darwin/arm64 and linux/amd64)
+$ make build-all
+
+# Build for a specific platform
+$ make build-darwin-arm64
+$ make build-linux-amd64
+
+# Build with a specific version
+$ make build-all VERSION=6.7.0
+
+# Clean build artifacts
+$ make clean
+```
+
+Binaries will be created in the `bin/` directory with the naming format:
+`terraform-provider-archive_<version>_<os>_<arch>`
+
 Using the provider
 ----------------------
 ## Fill in for each provider

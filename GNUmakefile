@@ -2,11 +2,40 @@ TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=archive
+BINARY_NAME=terraform-provider-archive
+VERSION?=dev
+
+GOOS?=$(shell go env GOOS)
+GOARCH?=$(shell go env GOARCH)
 
 default: build
 
 build: fmtcheck
 	go install
+
+build-local: fmtcheck
+	@echo "Building for $(GOOS)/$(GOARCH)..."
+	@mkdir -p bin
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/$(BINARY_NAME)_$(VERSION)_$(GOOS)_$(GOARCH)
+
+build-all: fmtcheck build-darwin-arm64 build-linux-amd64
+	@echo "All builds complete!"
+	@ls -lh bin/
+
+build-darwin-arm64: fmtcheck
+	@echo "Building for darwin/arm64..."
+	@mkdir -p bin
+	GOOS=darwin GOARCH=arm64 go build -o bin/$(BINARY_NAME)_$(VERSION)_darwin_arm64
+
+build-linux-amd64: fmtcheck
+	@echo "Building for linux/amd64..."
+	@mkdir -p bin
+	GOOS=linux GOARCH=amd64 go build -o bin/$(BINARY_NAME)_$(VERSION)_linux_amd64
+
+clean:
+	@echo "Cleaning build artifacts..."
+	@rm -rf bin/
+	@echo "Clean complete!"
 
 test: fmtcheck
 	go test -i $(TEST) || exit 1
@@ -57,5 +86,5 @@ ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
 endif
 	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider-test PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
 
-.PHONY: build test testacc vet fmt fmtcheck errcheck  test-compile website website-test
+.PHONY: build build-local build-all build-darwin-arm64 build-linux-amd64 clean test testacc vet fmt fmtcheck errcheck test-compile website website-test
 

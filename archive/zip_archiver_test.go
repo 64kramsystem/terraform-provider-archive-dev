@@ -13,7 +13,7 @@ import (
 func TestZipArchiver_Content(t *testing.T) {
 	zipfilepath := "archive-content.zip"
 	archiver := NewZipArchiver(zipfilepath)
-	if err := archiver.ArchiveContent([]byte("This is some content"), "content.txt"); err != nil {
+	if err := archiver.ArchiveContent([]byte("This is some content"), "content.txt", false); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	}
 
@@ -25,7 +25,7 @@ func TestZipArchiver_Content(t *testing.T) {
 func TestZipArchiver_File(t *testing.T) {
 	zipfilepath := "archive-file.zip"
 	archiver := NewZipArchiver(zipfilepath)
-	if err := archiver.ArchiveFile("./test-fixtures/test-file.txt"); err != nil {
+	if err := archiver.ArchiveFile("./test-fixtures/test-file.txt", false); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	}
 
@@ -41,7 +41,7 @@ func TestZipArchiver_FileModified(t *testing.T) {
 
 	var zip = func() {
 		archiver := NewZipArchiver(zipFilePath)
-		if err := archiver.ArchiveFile(toZipPath); err != nil {
+		if err := archiver.ArchiveFile(toZipPath, false); err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
 	}
@@ -74,7 +74,7 @@ func TestZipArchiver_FileModified(t *testing.T) {
 func TestZipArchiver_Dir(t *testing.T) {
 	zipfilepath := "archive-dir.zip"
 	archiver := NewZipArchiver(zipfilepath)
-	if err := archiver.ArchiveDir("./test-fixtures/test-dir", []string{""}); err != nil {
+	if err := archiver.ArchiveDir("./test-fixtures/test-dir", []string{""}, false); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	}
 
@@ -88,7 +88,7 @@ func TestZipArchiver_Dir(t *testing.T) {
 func TestZipArchiver_Dir_Exclude(t *testing.T) {
 	zipfilepath := "archive-dir.zip"
 	archiver := NewZipArchiver(zipfilepath)
-	if err := archiver.ArchiveDir("./test-fixtures/test-dir", []string{"file2.txt"}); err != nil {
+	if err := archiver.ArchiveDir("./test-fixtures/test-dir", []string{"file2.txt"}, false); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	}
 
@@ -101,7 +101,7 @@ func TestZipArchiver_Dir_Exclude(t *testing.T) {
 func TestZipArchiver_Dir_Exclude_With_Directory(t *testing.T) {
 	zipfilepath := "archive-dir.zip"
 	archiver := NewZipArchiver(zipfilepath)
-	if err := archiver.ArchiveDir("./test-fixtures/", []string{"test-dir", "test-dir2/file2.txt"}); err != nil {
+	if err := archiver.ArchiveDir("./test-fixtures/", []string{"test-dir", "test-dir2/file2.txt"}, false); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	}
 
@@ -121,7 +121,7 @@ func TestZipArchiver_Multiple(t *testing.T) {
 	}
 
 	archiver := NewZipArchiver(zipfilepath)
-	if err := archiver.ArchiveMultiple(content); err != nil {
+	if err := archiver.ArchiveMultiple(content, false); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	}
 

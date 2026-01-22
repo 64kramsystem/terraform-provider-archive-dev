@@ -1,3 +1,12 @@
+## 6.7.0 (Unreleased)
+
+IMPROVEMENTS:
+
+* Upgraded to Go 1.25.6 for improved performance and ARM64 support
+* Upgraded terraform-plugin-sdk from v0.12-alpha to v2.34.0
+* Added ARM64 build support for darwin (macOS Apple Silicon)
+* Added cross-compilation targets for darwin/arm64 and linux/amd64
+
 ## 1.3.0 (Unreleased)
 ## 1.2.0 (March 20, 2019)
 

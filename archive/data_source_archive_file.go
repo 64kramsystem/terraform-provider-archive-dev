@@ -8,12 +8,12 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"hash/crc32"
 	"io/ioutil"
 	"os"
 	"path"
 
-	"github.com/hashicorp/terraform/helper/hashcode"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceFile() *schema.Resource {
@@ -56,7 +56,7 @@ func dataSourceFile() *schema.Resource {
 					m := v.(map[string]interface{})
 					buf.WriteString(fmt.Sprintf("%s-", m["filename"].(string)))
 					buf.WriteString(fmt.Sprintf("%s-", m["content"].(string)))
-					return hashcode.String(buf.String())
+					return int(crc32.ChecksumIEEE(buf.Bytes()))
 				},
 			},
 			"source_content": {

@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/convert"
 	"github.com/zclconf/go-cty/cty/set"
 )
 
@@ -32,6 +33,11 @@ func ToCtyValue(val interface{}, ty cty.Type) (cty.Value, error) {
 }
 
 func toCtyValue(val reflect.Value, ty cty.Type, path cty.Path) (cty.Value, error) {
+	if val != (reflect.Value{}) && val.Type().AssignableTo(valueType) {
+		// If the source value is a cty.Value then we'll try to just pass
+		// through to the target type directly.
+		return toCtyPassthrough(val, ty, path)
+	}
 
 	switch ty {
 	case cty.Bool:
@@ -262,7 +268,7 @@ func toCtySet(val reflect.Value, ety cty.Type, path cty.Path) (cty.Value, error)
 			return cty.NilVal, path.NewErrorf("can't convert Go %s to %#v", val.Type(), cty.Set(ety))
 		}
 
-		rawSet := val.Interface().(set.Set)
+		rawSet := val.Interface().(set.Set[interface{}])
 		inVals := rawSet.Values()
 
 		if len(inVals) == 0 {
@@ -503,6 +509,20 @@ func toCtyDynamic(val reflect.Value, path cty.Path) (cty.Value, error) {
 
 	}
 
+}
+
+func toCtyPassthrough(wrappedVal reflect.Value, wantTy cty.Type, path cty.Path) (cty.Value, error) {
+	if wrappedVal = toCtyUnwrapPointer(wrappedVal); !wrappedVal.IsValid() {
+		return cty.NullVal(wantTy), nil
+	}
+
+	givenVal := wrappedVal.Interface().(cty.Value)
+
+	val, err := convert.Convert(givenVal, wantTy)
+	if err != nil {
+		return cty.NilVal, path.NewErrorf("unsuitable value: %s", err)
+	}
+	return val, nil
 }
 
 // toCtyUnwrapPointer is a helper for dealing with Go pointers. It has three
